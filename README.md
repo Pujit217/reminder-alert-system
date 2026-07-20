@@ -20,6 +20,7 @@
 
 > Dashboard Screenshot
 
+<img width="1900" height="988" alt="Screenshot 2026-07-19 132408" src="https://github.com/user-attachments/assets/dcac8ffe-f857-4efe-8993-1ce496faf32d" />
 
 
 ✨ Features
