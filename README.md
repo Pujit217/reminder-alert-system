@@ -217,7 +217,7 @@
 
 	Live Demo
 
-> **Application URL:** *(Will be updated after deployment)*
+> **Application URL:** http://18.227.43.90
 
 	Demo Account
 
