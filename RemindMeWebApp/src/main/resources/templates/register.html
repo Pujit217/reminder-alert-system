@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="auth-body">
+
+    <div class="auth-container">
+
+        <div class="auth-card">
+
+            <h1>Create Account</h1>
+
+            <p class="auth-subtitle">
+                Register to start creating reminders.
+            </p>
+
+            <form action="/register" method="post" class="auth-form">
+
+                <label for="name">Name</label>
+                <input id="name"
+                       type="text"
+                       name="name"
+                       placeholder="Enter your name"
+                       required>
+
+                <label for="email">Email</label>
+                <input id="email"
+                       type="email"
+                       name="email"
+                       placeholder="Enter your email"
+                       required>
+
+					   <label for="registerPassword">Password</label>
+
+					   <div class="password-field">
+
+					       <input id="registerPassword"
+					              type="password"
+					              name="password"
+					              placeholder="Create a password"
+					              required>
+
+								  <button type="button"
+								          class="password-toggle"
+								          onclick="togglePassword('registerPassword', this)"
+								          aria-label="Show password"
+								          title="Show password">
+
+					           <span class="eye-icon">◉</span>
+
+					       </button>
+
+					   </div>
+
+                <button type="submit" class="auth-button">
+                    Register
+                </button>
+
+            </form>
+
+            <p class="error-message" th:if="${error}" th:text="${error}"></p>
+
+            <p class="auth-link-text">
+                Already have an account?
+                <a href="/">Back to login</a>
+            </p>
+
+        </div>
+
+    </div>
+	<script src="/js/notifications.js"></script>
+</body>
+
+</html>

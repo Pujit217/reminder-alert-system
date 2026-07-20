@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-header">
+
+				<a th:href="@{/dashboard}"
+				   class="sidebar-brand"
+				   aria-label="Go to dashboard">
+
+				    <span class="brand-icon">⏰</span>
+				    <span class="brand-text">RemindMe</span>
+
+				</a>
+
+                <button type="button"
+                        class="sidebar-toggle"
+                        onclick="toggleSidebar()"
+                        aria-label="Open or close sidebar">
+                    ☰
+                </button>
+
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a href="/dashboard" data-tooltip="Dashboard">
+                    <span class="nav-icon">⌂</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+
+                <a href="/reminders" data-tooltip="View Reminders">
+                    <span class="nav-icon">◫</span>
+                    <span class="nav-label">View Reminders</span>
+                </a>
+
+                <a href="/reminders/add" data-tooltip="Add Reminder">
+                    <span class="nav-icon">＋</span>
+                    <span class="nav-label">Add Reminder</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button type="button"
+                        class="settings-sidebar-button"
+                        onclick="toggleSettingsPanel()"
+                        data-tooltip="Settings"
+                        aria-label="Open settings">
+
+                    <span class="nav-icon">⚙</span>
+                    <span class="nav-label">Settings</span>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+        <!-- Settings background overlay -->
+        <div class="settings-overlay"
+             id="settingsOverlay"
+             onclick="closeSettingsPanel()">
+        </div>
+
+        <!-- Settings panel -->
+        <section class="settings-panel"
+                 id="settingsPanel"
+                 aria-hidden="true">
+
+            <div class="settings-panel-header">
+
+                <div>
+                    <h2>Settings</h2>
+                    <p>Manage your application preferences</p>
+                </div>
+
+                <button type="button"
+                        class="settings-close-button"
+                        onclick="closeSettingsPanel()"
+                        aria-label="Close settings">
+                    ×
+                </button>
+
+            </div>
+
+            <div class="settings-user-card">
+
+                <div class="settings-user-icon">
+
+                    <span th:text="${#strings.substring(user.name, 0, 1)}">
+                        U
+                    </span>
+
+                </div>
+
+                <div class="settings-user-information">
+
+                    <strong th:text="${user.name}">
+                        User Name
+                    </strong>
+
+                    <span th:text="${user.email}">
+                        user@email.com
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="settings-group">
+
+                <h3>Appearance</h3>
+
+                <button type="button"
+                        class="settings-action-button theme-settings-button"
+                        id="themeToggleButton">
+
+                    <span class="settings-action-icon">☾</span>
+
+                    <span class="settings-action-text">
+
+                        <strong>Theme</strong>
+
+                        <small id="themeButtonDescription">
+                            Switch to dark mode
+                        </small>
+
+                    </span>
+
+                    <span class="settings-action-arrow">›</span>
+
+                </button>
+
+            </div>
+
+            <div class="settings-group">
+
+                <h3>Account</h3>
+
+                <a href="/logout"
+                   class="settings-action-button logout-settings-button">
+
+                    <span class="settings-action-icon">↪</span>
+
+                    <span class="settings-action-text">
+
+                        <strong>Logout</strong>
+
+                        <small>
+                            Sign out of your account
+                        </small>
+
+                    </span>
+
+                    <span class="settings-action-arrow">›</span>
+
+                </a>
+
+                <button type="button"
+                        class="settings-action-button delete-settings-button"
+                        id="deleteAccountButton"
+                        onclick="openDeleteAccountModal()">
+
+                    <span class="settings-action-icon">⌫</span>
+
+                    <span class="settings-action-text">
+
+                        <strong>Delete Account</strong>
+
+                        <small>
+                            Permanently remove your account
+                        </small>
+
+                    </span>
+
+                    <span class="settings-action-arrow">›</span>
+
+                </button>
+
+            </div>
+
+            <p class="settings-step-message">
+                Theme preferences are saved automatically.
+                Account deletion is permanent.
+            </p>
+
+        </section>
+
+        <!-- Delete-account background overlay -->
+        <div class="delete-modal-overlay"
+             id="deleteModalOverlay"
+             onclick="closeDeleteAccountModal()">
+        </div>
+
+        <!-- Delete-account confirmation modal -->
+        <section class="delete-account-modal"
+                 id="deleteAccountModal"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="deleteAccountTitle"
+                 aria-hidden="true">
+
+            <div class="delete-modal-icon">
+                !
+            </div>
+
+            <h2 id="deleteAccountTitle">
+                Delete Account?
+            </h2>
+
+            <p>
+                This will permanently delete your account and all reminders
+                connected to it. This action cannot be undone.
+            </p>
+
+            <div class="delete-warning-box">
+
+                <strong>
+                    The following information will be removed:
+                </strong>
+
+                <span>• Your user account</span>
+                <span>• All pending reminders</span>
+                <span>• All completed reminders</span>
+
+            </div>
+
+            <div class="delete-modal-actions">
+
+                <button type="button"
+                        class="cancel-delete-button"
+                        onclick="closeDeleteAccountModal()">
+                    Cancel
+                </button>
+
+                <form action="/account/delete"
+                      method="post">
+
+                    <button type="submit"
+                            class="confirm-delete-button">
+                        Permanently Delete
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+        <main class="main-content">
+
+            <div class="page-container">
+
+                <h1>Reminder Alert System</h1>
+
+                <h2>
+                    Welcome,
+                    <span th:text="${user.name}"></span>!
+                </h2>
+
+                <div class="card-box">
+
+                    <div class="card">
+
+                        <h3>Total Reminders</h3>
+
+                        <p th:text="${totalReminders}">
+                            0
+                        </p>
+
+                    </div>
+
+                    <div class="card">
+
+                        <h3>Pending</h3>
+
+                        <p th:text="${pendingReminders}">
+                            0
+                        </p>
+
+                    </div>
+
+                    <div class="card">
+
+                        <h3>Completed</h3>
+
+                        <p th:text="${completedReminders}">
+                            0
+                        </p>
+
+                    </div>
+
+                    <div class="card">
+
+                        <h3>High Priority</h3>
+
+                        <p th:text="${highPriority}">
+                            0
+                        </p>
+
+                    </div>
+
+                    <div class="card">
+
+                        <h3>Medium Priority</h3>
+
+                        <p th:text="${mediumPriority}">
+                            0
+                        </p>
+
+                    </div>
+
+                    <div class="card">
+
+                        <h3>Low Priority</h3>
+
+                        <p th:text="${lowPriority}">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="dashboard-lower-section">
+
+                    <!-- Calendar -->
+                    <section class="calendar-panel">
+
+                        <div class="calendar-header">
+
+                            <button type="button"
+                                    class="calendar-arrow"
+                                    onclick="changeCalendarMonth(-1)"
+                                    aria-label="Previous month">
+                                ‹
+                            </button>
+
+                            <h3 id="calendarMonthTitle">
+                                Month Year
+                            </h3>
+
+                            <button type="button"
+                                    class="calendar-arrow"
+                                    onclick="changeCalendarMonth(1)"
+                                    aria-label="Next month">
+                                ›
+                            </button>
+
+                        </div>
+
+                        <div class="calendar-weekdays">
+
+                            <span>Sun</span>
+                            <span>Mon</span>
+                            <span>Tue</span>
+                            <span>Wed</span>
+                            <span>Thu</span>
+                            <span>Fri</span>
+                            <span>Sat</span>
+
+                        </div>
+
+                        <div class="calendar-days"
+                             id="calendarDays">
+                        </div>
+
+                        <div class="selected-date-reminders">
+
+                            <h4 id="selectedDateTitle">
+                                Select a reminder date
+                            </h4>
+
+                            <div id="selectedDateReminderList">
+
+                                <p class="calendar-empty-message">
+                                    Click a highlighted date to view reminders.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                    <!-- Upcoming reminders and monthly summary -->
+                    <section class="upcoming-panel">
+
+                        <div class="upcoming-header">
+
+                            <div>
+
+                                <h3>Upcoming Reminders</h3>
+
+                                <p>
+                                    Your next scheduled reminders
+                                </p>
+
+                            </div>
+
+                            <a href="/reminders"
+                               class="small-view-link">
+                                View all
+                            </a>
+
+                        </div>
+
+                        <div class="upcoming-list">
+
+                            <article class="upcoming-item"
+                                     th:each="reminder : ${upcomingReminders}">
+
+                                <div class="upcoming-date-box">
+
+                                    <span class="upcoming-month"
+                                          th:text="${#temporals.format(
+                                          reminder.reminderTime,
+                                          'MMM')}">
+                                    </span>
+
+                                    <strong class="upcoming-day"
+                                            th:text="${#temporals.format(
+                                            reminder.reminderTime,
+                                            'dd')}">
+                                    </strong>
+
+                                </div>
+
+                                <div class="upcoming-information">
+
+                                    <h4 th:text="${reminder.title}">
+                                        Reminder title
+                                    </h4>
+
+                                    <p th:text="${#temporals.format(
+                                        reminder.reminderTime,
+                                        'MMM dd, yyyy hh:mm a')}">
+                                    </p>
+
+                                    <span class="badge"
+                                          th:classappend="${reminder.priority.name() == 'HIGH'}
+                                          ? ' badge-high'
+                                          : (${reminder.priority.name() == 'MEDIUM'}
+                                          ? ' badge-medium'
+                                          : ' badge-low')"
+                                          th:text="${reminder.priority}">
+                                    </span>
+
+                                </div>
+
+                            </article>
+
+                            <div class="no-upcoming-message"
+                                 th:if="${#lists.isEmpty(upcomingReminders)}">
+
+                                <span>✓</span>
+
+                                <h4>No upcoming reminders</h4>
+
+                                <p>You are all caught up.</p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="monthly-summary">
+
+                            <div class="monthly-summary-header">
+
+                                <div>
+
+                                    <h3>
+
+                                        <span th:text="${monthlySummaryMonth}">
+                                            Month
+                                        </span>
+
+                                        Summary
+
+                                    </h3>
+
+                                    <p>
+                                        Reminder activity for this month
+                                    </p>
+
+                                </div>
+
+                                <span class="monthly-summary-icon">
+                                    ▦
+                                </span>
+
+                            </div>
+
+                            <div class="monthly-summary-grid">
+
+                                <div class="monthly-summary-card">
+
+                                    <span class="monthly-summary-label">
+                                        Total
+                                    </span>
+
+                                    <strong th:text="${monthlyTotal}">
+                                        0
+                                    </strong>
+
+                                </div>
+
+                                <div class="monthly-summary-card">
+
+                                    <span class="monthly-summary-label">
+                                        Pending
+                                    </span>
+
+                                    <strong th:text="${monthlyPending}">
+                                        0
+                                    </strong>
+
+                                </div>
+
+                                <div class="monthly-summary-card">
+
+                                    <span class="monthly-summary-label">
+                                        Completed
+                                    </span>
+
+                                    <strong th:text="${monthlyCompleted}">
+                                        0
+                                    </strong>
+
+                                </div>
+
+                                <div class="monthly-summary-card">
+
+                                    <span class="monthly-summary-label">
+                                        High Priority
+                                    </span>
+
+                                    <strong th:text="${monthlyHighPriority}">
+                                        0
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+                <!-- Hidden reminder data used by calendar JavaScript -->
+                <div id="calendarReminderData"
+                     hidden>
+
+                    <div class="calendar-reminder-record"
+                         th:each="reminder : ${reminders}"
+                         th:attr="
+                            data-title=${reminder.title},
+                            data-description=${reminder.description},
+                            data-time=${reminder.reminderTime},
+                            data-priority=${reminder.priority},
+                            data-status=${reminder.status}">
+                    </div>
+
+                </div>
+
+            </div>
+
+			</main>
+
+			<!-- Premium Notification Container -->
+			<div id="notificationContainer"
+			     class="notification-container">
+			</div>
+
+			</div>
+
+			<script src="/js/notifications.js"></script>
+
+			</body>
+			</html>

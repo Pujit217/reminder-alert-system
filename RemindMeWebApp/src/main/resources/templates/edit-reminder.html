@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Reminder</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+		<aside class="sidebar" id="sidebar">
+
+		    <div class="sidebar-header">
+
+				<a th:href="@{/dashboard}"
+				   class="sidebar-brand"
+				   aria-label="Go to dashboard">
+
+				    <span class="brand-icon">⏰</span>
+				    <span class="brand-text">RemindMe</span>
+
+				</a>
+
+		        <button type="button"
+		                class="sidebar-toggle"
+		                onclick="toggleSidebar()"
+		                aria-label="Open or close sidebar">
+		            ☰
+		        </button>
+
+		    </div>
+
+		    <nav class="sidebar-nav">
+
+		        <a href="/dashboard" data-tooltip="Dashboard">
+		            <span class="nav-icon">⌂</span>
+		            <span class="nav-label">Dashboard</span>
+		        </a>
+
+		        <a href="/reminders" data-tooltip="View Reminders">
+		            <span class="nav-icon">◫</span>
+		            <span class="nav-label">View Reminders</span>
+		        </a>
+
+		        <a href="/reminders/add" data-tooltip="Add Reminder">
+		            <span class="nav-icon">＋</span>
+		            <span class="nav-label">Add Reminder</span>
+		        </a>
+
+		    </nav>
+
+		    <div class="sidebar-bottom">
+
+		        <button type="button"
+		                class="settings-sidebar-button"
+		                onclick="toggleSettingsPanel()"
+		                data-tooltip="Settings"
+		                aria-label="Open settings">
+
+		            <span class="nav-icon">⚙</span>
+		            <span class="nav-label">Settings</span>
+
+		        </button>
+
+		    </div>
+
+		</aside>
+
+		<div class="settings-overlay"
+		     id="settingsOverlay"
+		     onclick="closeSettingsPanel()">
+		</div>
+
+		<section class="settings-panel"
+		         id="settingsPanel"
+		         aria-hidden="true">
+
+		    <div class="settings-panel-header">
+
+		        <div>
+		            <h2>Settings</h2>
+		            <p>Manage your application preferences</p>
+		        </div>
+
+		        <button type="button"
+		                class="settings-close-button"
+		                onclick="closeSettingsPanel()"
+		                aria-label="Close settings">
+		            ×
+		        </button>
+
+		    </div>
+
+		    <div class="settings-user-card">
+
+		        <div class="settings-user-icon">
+
+		            <span th:text="${#strings.substring(user.name, 0, 1)}">
+		                U
+		            </span>
+
+		        </div>
+
+		        <div class="settings-user-information">
+
+		            <strong th:text="${user.name}">
+		                User Name
+		            </strong>
+
+		            <span th:text="${user.email}">
+		                user@email.com
+		            </span>
+
+		        </div>
+
+		    </div>
+
+		    <div class="settings-group">
+
+		        <h3>Appearance</h3>
+
+		        <button type="button"
+		                class="settings-action-button theme-settings-button"
+		                id="themeToggleButton">
+
+		            <span class="settings-action-icon">☾</span>
+
+		            <span class="settings-action-text">
+
+		                <strong>Theme</strong>
+
+		                <small id="themeButtonDescription">
+		                    Switch to dark mode
+		                </small>
+
+		            </span>
+
+		            <span class="settings-action-arrow">›</span>
+
+		        </button>
+
+		    </div>
+
+		    <div class="settings-group">
+
+		        <h3>Account</h3>
+
+		        <a href="/logout"
+		           class="settings-action-button logout-settings-button">
+
+		            <span class="settings-action-icon">↪</span>
+
+		            <span class="settings-action-text">
+
+		                <strong>Logout</strong>
+
+		                <small>
+		                    Sign out of your account
+		                </small>
+
+		            </span>
+
+		            <span class="settings-action-arrow">›</span>
+
+		        </a>
+
+		        <button type="button"
+		                class="settings-action-button delete-settings-button"
+		                id="deleteAccountButton"
+		                onclick="openDeleteAccountModal()">
+
+		            <span class="settings-action-icon">⌫</span>
+
+		            <span class="settings-action-text">
+
+		                <strong>Delete Account</strong>
+
+		                <small>
+		                    Permanently remove your account
+		                </small>
+
+		            </span>
+
+		            <span class="settings-action-arrow">›</span>
+
+		        </button>
+
+		    </div>
+
+		    <p class="settings-step-message">
+		        Theme preferences are saved automatically.
+		        Account deletion is permanent.
+		    </p>
+
+		</section>
+
+		<div class="delete-modal-overlay"
+		     id="deleteModalOverlay"
+		     onclick="closeDeleteAccountModal()">
+		</div>
+
+		<section class="delete-account-modal"
+		         id="deleteAccountModal"
+		         role="dialog"
+		         aria-modal="true"
+		         aria-labelledby="deleteAccountTitle"
+		         aria-hidden="true">
+
+		    <div class="delete-modal-icon">
+		        !
+		    </div>
+
+		    <h2 id="deleteAccountTitle">
+		        Delete Account?
+		    </h2>
+
+		    <p>
+		        This will permanently delete your account and all reminders
+		        connected to it. This action cannot be undone.
+		    </p>
+
+		    <div class="delete-warning-box">
+
+		        <strong>
+		            The following information will be removed:
+		        </strong>
+
+		        <span>• Your user account</span>
+		        <span>• All pending reminders</span>
+		        <span>• All completed reminders</span>
+
+		    </div>
+
+		    <div class="delete-modal-actions">
+
+		        <button type="button"
+		                class="cancel-delete-button"
+		                onclick="closeDeleteAccountModal()">
+		            Cancel
+		        </button>
+
+		        <form action="/account/delete"
+		              method="post">
+
+		            <button type="submit"
+		                    class="confirm-delete-button">
+		                Permanently Delete
+		            </button>
+
+		        </form>
+
+		    </div>
+
+		</section>
+
+        <main class="main-content">
+
+            <div class="page-container">
+
+                <div class="form-page">
+
+                    <div class="form-heading">
+                        <h1>Edit Reminder</h1>
+                        <p>Update the reminder information below.</p>
+                    </div>
+
+                    <form action="/reminders/update"
+                          method="post"
+                          class="reminder-form">
+
+                        <input type="hidden"
+                               name="reminderId"
+                               th:value="${reminder.reminderId}">
+
+                        <label for="title">Title</label>
+
+                        <input id="title"
+                               type="text"
+                               name="title"
+                               th:value="${reminder.title}"
+                               required>
+
+                        <label for="description">Description</label>
+
+                        <textarea id="description"
+                                  name="description"
+                                  th:text="${reminder.description}"></textarea>
+
+                        <label for="reminderTime">Reminder Time</label>
+
+                        <input id="reminderTime"
+                               type="datetime-local"
+                               name="reminderTime"
+                               th:value="${reminder.reminderTime}"
+                               required>
+
+                        <label for="priority">Priority</label>
+
+                        <select id="priority"
+                                name="priority"
+                                required>
+
+                            <option th:each="priority : ${priorities}"
+                                    th:value="${priority}"
+                                    th:text="${priority}"
+                                    th:selected="${priority == reminder.priority}">
+                            </option>
+
+                        </select>
+
+                        <label for="status">Status</label>
+
+                        <select id="status"
+                                name="status"
+                                required>
+
+                            <option th:each="status : ${statuses}"
+                                    th:value="${status}"
+                                    th:text="${status}"
+                                    th:selected="${status == reminder.status}">
+                            </option>
+
+                        </select>
+
+                        <div class="form-actions">
+
+                            <button type="submit">
+                                Update Reminder
+                            </button>
+
+                            <a href="/reminders"
+                               class="secondary-button">
+                                Cancel
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="/js/notifications.js"></script>
+
+</body>
+
+</html>

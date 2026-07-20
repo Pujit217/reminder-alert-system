@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="auth-body">
+
+    <div class="auth-container">
+
+        <div class="auth-card">
+
+            <h1>Reminder Alert System</h1>
+
+            <p class="auth-subtitle">
+                Sign in to manage your reminders.
+            </p>
+
+            <form action="/login" method="post" class="auth-form">
+
+                <label for="email">Email</label>
+                <input id="email"
+                       type="email"
+                       name="email"
+                       placeholder="Enter your email"
+                       required>
+
+					   <label for="loginPassword">Password</label>
+
+					   <div class="password-field">
+
+					       <input id="loginPassword"
+					              type="password"
+					              name="password"
+					              placeholder="Enter your password"
+					              required>
+
+								  <button type="button"
+								          class="password-toggle"
+								          onclick="togglePassword('loginPassword', this)"
+								          aria-label="Show password"
+								          title="Show password">
+
+					           <span class="eye-icon">◉</span>
+
+					       </button>
+
+					   </div>
+
+                <button type="submit" class="auth-button">
+                    Login
+                </button>
+
+            </form>
+
+            <p class="error-message" th:if="${error}" th:text="${error}"></p>
+
+            <p class="success-message" th:if="${message}" th:text="${message}"></p>
+			
+			<p class="success-message"
+			   th:if="${param.accountDeleted}">
+			    Your account was deleted successfully.
+			</p>
+
+            <p class="auth-link-text">
+                New user?
+                <a href="/register">Create an account</a>
+            </p>
+
+        </div>
+
+    </div>
+	<script src="/js/notifications.js"></script>
+</body>
+
+</html>
